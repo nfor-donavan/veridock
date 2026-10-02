@@ -1,0 +1,17 @@
+:root{--ink:#0A1B2E;--ink2:#4A6078;--teal:#0E7C86;--brass:#C9A24B;--salt:#F3F5F4;--line:#D5DEE5;font-family:'IBM Plex Sans',system-ui,sans-serif;color:var(--ink)}
+*{box-sizing:border-box}body{margin:0;background:var(--salt)}.page{max-width:520px;margin:auto;padding:0 0 40px}.muted,.fail{padding:24px;color:var(--ink2)}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--ink);color:#fff;font-size:13px}.brand{font:700 20px 'Bricolage Grotesque',sans-serif}header span{color:#9FB3C8}
+.hero{background:var(--ink);color:#fff;padding:8px 20px 26px}.hero small{color:#9FB3C8}.hero h1{font:700 32px 'Bricolage Grotesque',sans-serif;margin:2px 0 6px;letter-spacing:.5px}.hero p{margin:0;color:#B8C7D6;font-size:14px}
+.prog{height:8px;background:#1E3753;border-radius:4px;margin-top:18px;overflow:hidden}.prog div{height:100%;background:var(--brass);border-radius:4px}.hero .prog-t{margin-top:8px;color:#fff;font-weight:600}
+.status{margin:16px 20px;padding:12px 14px;border-radius:10px;color:#fff;display:flex;flex-direction:column;gap:2px}.status span{font-size:13px;opacity:.92}
+.status.safe{background:#2E9E6B}.status.warn{background:#C98A12}.status.crit{background:#D6402F}.status.fine{background:#8E1F2F}.status.done{background:var(--teal)}
+.steps{list-style:none;margin:0;padding:8px 20px}.steps li{display:flex;gap:14px;position:relative;padding-bottom:22px}
+.steps li:not(:last-child)::before{content:'';position:absolute;left:13px;top:28px;bottom:0;width:2px;background:var(--line)}.steps li.done:not(:last-child)::before{background:var(--teal)}
+.dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:#fff;flex:none;display:grid;place-items:center;color:#fff;font-size:14px}
+.done .dot{background:var(--teal);border-color:var(--teal)}.current .dot{border-color:var(--brass);background:var(--brass);box-shadow:0 0 0 6px rgba(201,162,75,.25)}
+.body{display:grid;gap:3px;justify-items:start;padding-top:3px}.body small{color:var(--ink2)}.pending b{color:#7F93A6;font-weight:500}.hash{font-size:11px;word-break:break-all}
+.link{font:inherit;background:none;border:0;color:var(--teal);padding:4px 0;font-weight:600;text-decoration:underline;cursor:pointer}
+.body img{width:100%;max-width:340px;border-radius:10px;border:1px solid var(--line);margin-top:6px}
+footer{padding:12px 20px;font-size:12px;color:var(--ink2);line-height:1.6}
+
+.fees{margin:0 20px 8px;padding:12px 14px;border-radius:10px;background:#FFF8E6;border:1px solid #EBD79B;display:grid;gap:2px}.fees span{font:700 22px 'Bricolage Grotesque',sans-serif}.fees small{color:var(--ink2)}
