@@ -32,6 +32,17 @@ Transit agencies log each customs milestone with mandatory document proof; impor
 - Charges are estimated up to the Gate Pass milestone and shown as a range in the container list, the container panel, the Performance tab and the importer tracker. Detention (outside the terminal) is not tracked.
 - Logic lives in `backend/src/services/demurrage.js`.
 
+## Added in v1.3
+- **Light and dark mode** on the Desk and the Tracker (sun/moon button, remembers the choice, follows the device setting by default).
+- **French and English** everywhere: Desk, Tracker, SMS (per-importer language, set at registration), PDF report and alert messages. French is the default unless the browser is English. Server error messages are translated by the Desk.
+- **Per-carrier tariffs:** in the Tariff tab each shipping line can have its own free days and fixed XAF rate per container type. A carrier rate makes amounts exact (labelled as carrier tariff); otherwise the agency range is used and labelled an estimate. Free days prefill when you pick a carrier at registration.
+- **Platform owner console:** open `/#/owner` on the Desk, sign in with the super-admin account, then onboard agencies, suspend or reactivate them, and reset a manager password.
+- **Manager alerts:** each time a container becomes Critical or starts accruing fines, or a proof is flagged, managers get an in-app alert (bell), an email (set `SMTP_*`) and an SMS if they saved a phone number. Checked every 30 minutes. Mock mode logs to the console.
+- **PDF clearance report** per container (Desk button for the agency version, link on the Tracker for importers): timeline with file fingerprints, day-by-day demurrage statement, QR code to the live status and a report fingerprint.
+- **Audit-grade proof checks:** the real file type is verified from its bytes; photos are checked for camera data, editing software, taken-before-arrival, future dates and stale photos; reused files are detected within the agency. Suspicious uploads are accepted but flagged "Needs review" until a manager signs them off.
+
+New backend packages: pdfkit, qrcode, exifr, nodemailer (installed by `npm install` on deploy). New optional variables: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM.
+
 ## Deploy
 - Render web service for `backend` (set env vars, use Cloudinary because Render disk is ephemeral), static sites for `desk` and `tracker` with `VITE_API_URL` pointing at the API. For the tracker, add an SPA rewrite of `/*` to `/index.html`.
 - Onboard agencies with `POST /api/auth/super-login` then `POST /api/auth/admin/tenants`.

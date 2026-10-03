@@ -12,6 +12,7 @@ async function requireUser(req, res, next) {
     const user = await User.findById(p.id);
     if (!user || !user.active) return res.status(401).json({ error: 'Account disabled' });
     req.user = user; req.tenantId = user.tenantId; req.tenant = await Tenant.findById(user.tenantId);
+    if (!req.tenant || req.tenant.active === false) return res.status(401).json({ error: 'This agency account is suspended.' });
     next();
   } catch { res.status(401).json({ error: 'Please sign in again' }); }
 }

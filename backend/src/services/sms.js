@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { SmsLog } = require('../models');
+const { SmsLog, MILESTONE_LABELS, MILESTONE_LABELS_FR } = require('../models');
 
 // Normalise Cameroon numbers to +237XXXXXXXXX
 function normalizePhone(p) {
@@ -30,8 +30,11 @@ async function sendSms({ tenantId, consignmentId, to, body }) {
   }
 }
 
-function progressMessage(c, label) {
+// French copy avoids circumflex letters so the SMS stays in the cheaper GSM-7 encoding
+function progressMessage(c, milestone) {
   const link = `${process.env.TRACKER_BASE_URL || 'tracker.veridock.cm'}/bl/${c.publicToken}`;
-  return `Veridock: ${label} for container ${c.containerNumber}. Progress: Step ${c.step}/6. Document receipt attached. Live status: ${link}`;
+  if (c.importerLanguage === 'en')
+    return `Veridock: ${MILESTONE_LABELS[milestone]} for container ${c.containerNumber}. Progress: Step ${c.step}/6. Document receipt attached. Live status: ${link}`;
+  return `Veridock : ${MILESTONE_LABELS_FR[milestone]} pour le conteneur ${c.containerNumber}. Etape ${c.step}/6. Justificatif joint. Suivi en direct : ${link}`;
 }
 module.exports = { sendSms, normalizePhone, progressMessage };

@@ -13,11 +13,21 @@ const MILESTONE_LABELS = {
   GATE_PASS_ISSUED: 'Gate pass issued (Bon à enlever)'
 };
 
+const MILESTONE_LABELS_FR = {
+  SGS_MANIFEST_ENTRY: 'Arrivée et manifeste enregistrés',
+  CUSTOMS_DECLARATION: 'Déclaration déposée dans CAMCIS',
+  LIQUIDATION_SETTLED: 'Droits liquidés',
+  BANK_DUTY_PAYMENT: 'Droits payés à la banque',
+  PORT_PHYSICAL_INSPECTION: 'Scanner / visite physique',
+  GATE_PASS_ISSUED: 'Bon à enlever délivré'
+};
+
 const Tenant = mongoose.model('Tenant', new Schema({
   agencyName: { type: String, required: true },
   licenceNumber: { type: String, required: true, unique: true },
   port: { type: String, enum: ['DOUALA', 'KRIBI'], default: 'DOUALA' },
   isPremium: { type: Boolean, default: true },
+  active: { type: Boolean, default: true }, // platform owner can suspend an agency
   tariff: { type: Schema.Types.Mixed, default: () => JSON.parse(JSON.stringify(DEFAULT_TARIFF)) },
   createdAt: { type: Date, default: Date.now }
 }));
@@ -33,6 +43,7 @@ const User = mongoose.model('User', new Schema({
   email: { type: String, required: true, lowercase: true, unique: true },
   passwordHash: { type: String, required: true },
   role: { type: String, enum: ['AGENT', 'MANAGER'], default: 'AGENT' },
+  phone: String, // managers receive risk alerts here by SMS
   active: { type: Boolean, default: true }
 }, { timestamps: true }));
 
@@ -53,6 +64,10 @@ const HistorySchema = new Schema({
   proofDocumentUrl: String,
   proofSha256: String,
   proofMime: String,
+  proofChecks: [{ _id: false, code: String, level: { type: String, enum: ['info', 'warn', 'high'] }, message: String }],
+  proofRisk: { type: String, enum: ['OK', 'REVIEW'], default: 'OK' },
+  exifTakenAt: Date,
+  reviewedBy: { type: Schema.Types.ObjectId, ref: 'User' }, reviewedByName: String, reviewedAt: Date, reviewNote: String,
   notes: String
 });
 
@@ -69,6 +84,8 @@ const ConsignmentSchema = new Schema({
   demurrageFreeDays: { type: Number, required: true, min: 0 },
   arrivalDate: { type: Date, required: true },
   publicToken: { type: String, unique: true, default: () => crypto.randomBytes(9).toString('base64url') },
+  importerLanguage: { type: String, enum: ['fr', 'en'], default: 'fr' },
+  lastAlertedLevel: String,
   currentMilestone: { type: String, enum: MILESTONES, default: MILESTONES[0] },
   exitedAt: Date,
   riskLevel: { type: String, enum: ['SAFE', 'WARNING', 'CRITICAL_RISK', 'FINES_ACCUMULATING', 'CLEARED'], default: 'SAFE' },
@@ -99,4 +116,10 @@ ConsignmentSchema.methods.computeRisk = function () { return computeRisk(this); 
 ConsignmentSchema.pre('save', function (next) { this.riskLevel = computeRisk(this); next(); });
 
 const Consignment = mongoose.model('Consignment', ConsignmentSchema);
-module.exports = { Tenant, GlobalSuperAdmin, User, SmsLog, Consignment, MILESTONES, MILESTONE_LABELS };
+const Alert = mongoose.model('Alert', new Schema({
+  tenantId: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true, index: true },
+  consignmentId: { type: Schema.Types.ObjectId, ref: 'Consignment' },
+  kind: { type: String, enum: ['CRITICAL_RISK', 'FINES_ACCUMULATING', 'PROOF_REVIEW'] },
+  message: String, messageFr: String, read: { type: Boolean, default: false }
+}, { timestamps: true }));
+module.exports = { Tenant, GlobalSuperAdmin, User, SmsLog, Consignment, Alert, MILESTONES, MILESTONE_LABELS, MILESTONE_LABELS_FR };
