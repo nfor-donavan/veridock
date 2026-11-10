@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api, money } from './api.js';
 import { t } from './i18n.js';
+import { Loading } from './Brand.jsx';
 
 const Kpi = ({ label, value, hint, tone }) => (<div className={`kpi ${tone || ''}`}><span>{value ?? '—'}</span><b>{label}</b>{hint && <small>{hint}</small>}</div>);
 
@@ -8,7 +9,7 @@ export default function Analytics() {
   const [d, setD] = useState(null); const [err, setErr] = useState('');
   useEffect(() => { api('/consignments/analytics').then(setD).catch(e => setErr(e.message)); }, []);
   if (err) return <p className="err">{err}</p>;
-  if (!d) return <p className="muted">{t('Loading performance…')}</p>;
+  if (!d) return <Loading label={t('Loading performance…')} />;
   const max = Math.max(1, ...d.stages.map(s => s.avgDays || 0)); const k = d.totals;
   return (
     <div className="perf">

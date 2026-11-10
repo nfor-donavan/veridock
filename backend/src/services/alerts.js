@@ -14,7 +14,7 @@ async function raise(c, kind, message, messageFr) {
   await Alert.create({ tenantId: c.tenantId, consignmentId: c._id, kind, message, messageFr });
   const managers = await User.find({ tenantId: c.tenantId, role: 'MANAGER', active: true });
   for (const m of managers) {
-    sendEmail(m.email, `Veridock alert / Alerte: ${c.containerNumber}`, `${message}\n\n${messageFr}`).catch(e => console.error('Email failed:', e.message));
+    sendEmail(m.email, `Veridock alert / Alerte: ${c.containerNumber}`, `${message}\n\n${messageFr}\n\n-- Veridock | Nexus Tech Labs`).catch(e => console.error('Email failed:', e.message));
     if (m.phone) sendSms({ tenantId: c.tenantId, consignmentId: c._id, to: m.phone, body: `Veridock: ${messageFr}` }).catch(console.error);
   }
 }

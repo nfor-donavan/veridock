@@ -7,7 +7,7 @@ document.documentElement.lang = lang;
 
 const FR = {
   // common
-  'd': 'j',
+  'd': 'j', 'by': 'par', 'Developed by': 'Développé par',
   'Sign in': 'Se connecter', 'Signing in…': 'Connexion…', 'Sign out': 'Se déconnecter', 'Email': 'E-mail', 'Password': 'Mot de passe', 'Cancel': 'Annuler', 'Close': 'Fermer', 'Save': 'Enregistrer', 'Loading…': 'Chargement…',
   'Something went wrong': 'Une erreur est survenue', 'Change language': 'Changer de langue', 'Toggle light or dark mode': 'Basculer entre mode clair et mode sombre', 'Containers': 'Conteneurs', 'Performance': 'Performance', 'Demurrage tariff': 'Tarif des surestaries',
   // login

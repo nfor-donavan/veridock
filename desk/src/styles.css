@@ -61,3 +61,14 @@ td{padding:14px 16px;border-bottom:1px solid var(--line2);vertical-align:middle}
 .hbar{display:grid;grid-template-columns:230px 1fr 70px;gap:12px;align-items:center;padding:6px 0;font-size:14px}.track{background:var(--bg);height:14px;border-radius:7px;overflow:hidden}.track i{display:block;height:100%;background:var(--accent);border-radius:7px}.track i.hot{background:var(--crit)}
 .two{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}.tariff td input{min-width:90px}
 @media(max-width:900px){.login{grid-template-columns:1fr}.login-art{padding:32px;min-height:300px}.login-form{padding:32px}.stats{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.hbar{grid-template-columns:1fr 60px}.hbar .track{grid-column:1/3}.hide-sm{display:none}main{padding:16px}.top{padding:10px 14px}.tabs{padding:0 14px}}
+
+/* Nexus Tech Labs brand layer (developer brand; Veridock stays the product identity) */
+:root{--nexus:#003EC8}:root[data-theme=dark]{--nexus:#7FA6FF}
+.nx{display:inline-block;vertical-align:middle}.nx-for-dark{display:none}:root[data-theme=dark] .nx-for-light{display:none}:root[data-theme=dark] .nx-for-dark{display:inline-block}
+.nexusby{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}.nexusby b{font-weight:600;color:var(--nexus);letter-spacing:.2px}
+.nexusby.ondark{color:#9FB3C8}.nexusby.ondark b{color:#E6EDF4}
+.vsep{width:1px;height:26px;background:#35506C;margin:0 4px}
+.lockup{display:flex;align-items:center;gap:16px}.wordmark{display:block;font:700 40px 'Bricolage Grotesque',sans-serif;letter-spacing:-1px;line-height:1;margin-bottom:8px}.login-art .nexusby{font-size:14px}.login-art .nexusby b{font-size:15px}
+.app-foot{display:flex;justify-content:center;align-items:center;gap:8px;padding:22px 16px 28px;font-size:12px;color:var(--muted)}.app-foot b{color:var(--nexus);font-weight:600}
+.loading{display:grid;justify-items:center;gap:8px;padding:48px 16px;color:var(--muted)}.wordmark-sm{font:700 20px 'Bricolage Grotesque',sans-serif;color:var(--text)}
+.empty p{margin:10px 0 0}.empty svg{opacity:.55}

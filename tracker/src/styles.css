@@ -17,3 +17,8 @@ header{display:flex;align-items:center;gap:10px;padding:12px 20px;background:#0A
 .body img{width:100%;max-width:340px;border-radius:10px;border:1px solid var(--line);margin-top:6px}
 .report{display:block;margin:4px 20px 8px;padding:12px;text-align:center;border:1px solid var(--line);border-radius:10px;color:var(--accent);font-weight:600;text-decoration:none;background:var(--surface)}
 footer{padding:12px 20px;font-size:12px;color:var(--muted);line-height:1.6}
+
+:root{--nexus:#003EC8}:root[data-theme=dark]{--nexus:#7FA6FF}
+.nx{display:inline-block;vertical-align:middle}.nx-for-dark{display:none}:root[data-theme=dark] .nx-for-light{display:none}:root[data-theme=dark] .nx-for-dark{display:inline-block}
+.devline{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}.devline b{color:var(--nexus);font-weight:600}
+.load{padding:28px 20px}.load .brand{color:var(--text)}.load .muted{padding:8px 0}

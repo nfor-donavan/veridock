@@ -1,6 +1,9 @@
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
+const NEXUS_MARK = path.join(__dirname, '..', '..', 'assets', 'nexus-emblem-light.png');
 const { MILESTONES, MILESTONE_LABELS, MILESTONE_LABELS_FR } = require('../models');
 const { calcDemurrage, TYPE_LABELS } = require('./demurrage');
 
@@ -8,13 +11,13 @@ const L = {
   en: { title: 'Clearance report', sub: 'Port transit phase, Douala and Kribi', agency: 'Transit agency', generated: 'Generated', container: 'Container', bl: 'Bill of lading', camcis: 'CAMCIS reference', type: 'Type', line: 'Shipping line', importer: 'Importer', port: 'Port', arrival: 'Arrival', status: 'Status', step: 'Step',
     timeline: 'Clearance timeline', pending: 'Pending', by: 'by', sha: 'File fingerprint (SHA-256)', checks: 'Document checks', ok: 'Passed', review: 'Flagged for review', reviewed: 'Reviewed by',
     dem: 'Storage charges (demurrage)', free: 'Free days', elapsed: 'Days since arrival', chargeable: 'Chargeable days', none: 'No storage charges so far.', period: 'Period (day)', days: 'Days', rate: 'Rate / day', subtotal: 'Subtotal', total: 'Total',
-    est: 'Estimate based on the agency tariff. The final amount is set by the shipping line.', exact: 'Calculated from the shipping line tariff on file.', det: 'Detention (holding the container outside the terminal) is not included.',
+    dev: 'Developed by Nexus Tech Labs', est: 'Estimate based on the agency tariff. The final amount is set by the shipping line.', exact: 'Calculated from the shipping line tariff on file.', det: 'Detention (holding the container outside the terminal) is not included.',
     scan: 'Scan to check the live status', fp: 'Report fingerprint', disc: 'This report lists documents uploaded by the transit agency. A matching fingerprint shows a file was not changed after upload; it does not by itself prove that a stamp is genuine.',
     s: { SAFE: 'On schedule', WARNING: 'Free period running down', CRITICAL_RISK: 'Critical', FINES_ACCUMULATING: 'Storage fines accruing', CLEARED: 'Cleared for exit' }, labels: MILESTONE_LABELS },
   fr: { title: 'Rapport de dédouanement', sub: 'Phase de transit portuaire, Douala et Kribi', agency: 'Agence de transit', generated: 'Généré le', container: 'Conteneur', bl: 'Connaissement (B/L)', camcis: 'Référence CAMCIS', type: 'Type', line: 'Compagnie maritime', importer: 'Importateur', port: 'Port', arrival: 'Arrivée', status: 'Statut', step: 'Étape',
     timeline: 'Étapes du dédouanement', pending: 'En attente', by: 'par', sha: 'Empreinte du fichier (SHA-256)', checks: 'Contrôles du document', ok: 'Conformes', review: 'À vérifier', reviewed: 'Vérifié par',
     dem: 'Frais de stockage (surestaries)', free: 'Jours gratuits', elapsed: 'Jours depuis l\u2019arrivée', chargeable: 'Jours facturables', none: 'Aucun frais de stockage à ce jour.', period: 'Période (jour)', days: 'Jours', rate: 'Tarif / jour', subtotal: 'Sous-total', total: 'Total',
-    est: 'Estimation selon le tarif de l\u2019agence. Le montant final est fixé par la compagnie maritime.', exact: 'Calculé selon le tarif de la compagnie maritime enregistré.', det: 'Les frais de détention (conteneur gardé hors du terminal) ne sont pas inclus.',
+    dev: 'Développé par Nexus Tech Labs', est: 'Estimation selon le tarif de l\u2019agence. Le montant final est fixé par la compagnie maritime.', exact: 'Calculé selon le tarif de la compagnie maritime enregistré.', det: 'Les frais de détention (conteneur gardé hors du terminal) ne sont pas inclus.',
     scan: 'Scannez pour voir le statut en direct', fp: 'Empreinte du rapport', disc: 'Ce rapport liste les documents déposés par l\u2019agence de transit. Une empreinte identique montre qu\u2019un fichier n\u2019a pas été modifié après le dépôt ; elle ne prouve pas à elle seule l\u2019authenticité d\u2019un cachet.',
     s: { SAFE: 'Dans les délais', WARNING: 'Délai gratuit bientôt écoulé', CRITICAL_RISK: 'Critique', FINES_ACCUMULATING: 'Surestaries en cours', CLEARED: 'Sorti du port' }, labels: MILESTONE_LABELS_FR }
 };
@@ -31,7 +34,7 @@ async function buildReport(c, tenant, lang = 'fr', audience = 'agency') {
   const fingerprint = crypto.createHash('sha256').update(JSON.stringify({ bl: c.billOfLading, ct: c.containerNumber, steps: [...adv.values()].map(h => [h.milestone, h.updatedAt, h.proofSha256]), dm: [dm.estMin, dm.estMax] })).digest('hex');
   const qr = await QRCode.toBuffer(link.startsWith('http') ? link : `https://${link}`, { margin: 1, width: 220 });
 
-  const doc = new PDFDocument({ size: 'A4', margin: 48, info: { Title: `${T.title} ${c.containerNumber}`, Author: 'Veridock' } });
+  const doc = new PDFDocument({ size: 'A4', margin: 48, bufferPages: true, info: { Title: `${T.title} ${c.containerNumber}`, Author: 'Veridock' } });
   const W = doc.page.width - 96;
   const ensure = (h) => { if (doc.y + h > doc.page.height - 70) doc.addPage(); };
 
@@ -40,6 +43,9 @@ async function buildReport(c, tenant, lang = 'fr', audience = 'agency') {
   doc.save().translate(48, 20).scale(0.28); doc.path('M90 0 172 45v90L90 180 8 135V45z').fill('#12A5B0'); doc.path('M90 14 160 52v76L90 166 20 128V52z').lineWidth(4).stroke('#C9A24B'); doc.restore();
   doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(20).text('Veridock', 108, 24);
   doc.font('Helvetica').fontSize(11).fillColor('#9FB3C8').text(T.title, 108, 50).text(T.sub, 108, 65);
+  // developer brand in the header band (right side); the product name stays primary
+  if (fs.existsSync(NEXUS_MARK)) doc.image(NEXUS_MARK, doc.page.width - 48 - 23, 18, { height: 28 });
+  doc.font('Helvetica').fontSize(7.5).fillColor('#9FB3C8').text(T.dev, doc.page.width - 48 - 170, 52, { width: 170, align: 'right', lineBreak: false });
   doc.fillColor('#0A1B2E'); doc.y = 112;
 
   const kv = (pairs) => {
@@ -99,6 +105,12 @@ async function buildReport(c, tenant, lang = 'fr', audience = 'agency') {
   doc.font('Courier').fontSize(7.5).fillColor('#5B7088').text(`${T.fp}: ${fingerprint}`, 138, top + 22, { width: W - 100 });
   doc.font('Helvetica').fontSize(7.5).text(`${T.generated}: ${when(new Date(), lang)}`, 138, top + 46, { width: W - 100 });
   doc.font('Helvetica-Oblique').fontSize(7.5).fillColor('#5B7088').text(T.disc, 138, top + 58, { width: W - 100 });
+  // footer on every page
+  const pages = doc.bufferedPageRange();
+  for (let i = pages.start; i < pages.start + pages.count; i++) {
+    doc.switchToPage(i);
+    doc.font('Helvetica').fontSize(7.5).fillColor('#8A9BAD').text(`Veridock · ${T.dev}   ·   ${i + 1}/${pages.count}`, 48, doc.page.height - 66, { width: W, align: 'center', lineBreak: false });
+  }
   return doc;
 }
 module.exports = { buildReport };

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from './api.js';
 import { t } from './i18n.js';
+import { Logo, NexusBy, Footer } from './Brand.jsx';
 
 const tok = () => sessionStorage.getItem('vd_super');
 export default function Owner() {
@@ -16,14 +17,14 @@ export default function Owner() {
   const set = (k) => (e) => setN({ ...n, [k]: e.target.value });
 
   if (!authed) return (
-    <div className="login"><div className="login-art"><h1>{t('Platform owner console')}</h1></div>
+    <div className="login"><div className="login-art"><div className="lockup"><Logo size={64} /><div><b className="wordmark">Veridock</b><NexusBy onDark size={20} /></div></div><h1>{t('Platform owner console')}</h1></div>
       <div className="login-form"><h2>{t('Platform owner')}</h2>
         <label>{t('Email')}<input type="email" value={f.email} onChange={e => setF({ ...f, email: e.target.value })} /></label>
         <label>{t('Password')}<input type="password" value={f.password} onChange={e => setF({ ...f, password: e.target.value })} onKeyDown={e => e.key === 'Enter' && login()} /></label>
         {err && <p className="err" role="alert">{err}</p>}<button className="btn primary" onClick={login}>{t('Sign in')}</button>
         <a href="#/" className="muted">{t('Back to Transit Desk')}</a></div></div>);
   return (
-    <div className="shell"><header className="top"><b className="brand">{t('Platform owner console')}</b>
+    <div className="shell"><header className="top"><div className="row"><Logo /><b className="brand">Veridock</b><span className="vsep hide-sm" /><span className="hide-sm"><NexusBy onDark size={18} /></span></div>
       <div className="row"><a className="btn" href="#/" onClick={() => sessionStorage.removeItem('vd_super')}>{t('Sign out')}</a></div></header>
       <main>
         {msg && <p className="ok">{msg}</p>}{err && <p className="err" role="alert">{err}</p>}
@@ -41,6 +42,6 @@ export default function Owner() {
         <section className="panel"><h3>{t('Reset a manager password')}</h3><div className="grid2">
           <label>{t('Email')}<input type="email" value={rp.email} onChange={e => setRp({ ...rp, email: e.target.value })} /></label><label>{t('New password')}<input type="password" value={rp.password} onChange={e => setRp({ ...rp, password: e.target.value })} /></label></div>
           <div className="row end"><button className="btn" onClick={reset}>{t('Reset password')}</button></div></section>
-      </main></div>
+      </main><Footer /></div>
   );
 }

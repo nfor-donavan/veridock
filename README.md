@@ -1,4 +1,5 @@
 # Veridock: customs clearance, proven.
+*A product developed by Nexus Tech Labs.*
 
 Multi-tenant clearance and transit tracker for freight forwarders at the Port of Douala and Kribi Deep Seaport.
 Transit agencies log each customs milestone with mandatory document proof; importers follow a live link sent by SMS.
@@ -42,6 +43,13 @@ Transit agencies log each customs milestone with mandatory document proof; impor
 - **Audit-grade proof checks:** the real file type is verified from its bytes; photos are checked for camera data, editing software, taken-before-arrival, future dates and stale photos; reused files are detected within the agency. Suspicious uploads are accepted but flagged "Needs review" until a manager signs them off.
 
 New backend packages: pdfkit, qrcode, exifr, nodemailer (installed by `npm install` on deploy). New optional variables: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM.
+
+## Branding: Nexus Tech Labs
+Veridock stays the product identity; Nexus Tech Labs appears as the developer brand ("by Nexus Tech Labs").
+- Assets in `branding/nexus/`: emblem and full logo as transparent PNGs, in an original-colour version (light surfaces) and a light version (dark surfaces), made from the supplied logo. Brand colours taken from it: blue `#003EC8`, slate `#384048`.
+- Shown on: Desk login, Desk header (compact lockup), Desk footer, loading and empty states, the platform owner console, the importer tracker footer, the PDF report (header and every page footer) and alert emails. The browser tab reads "Veridock | Nexus Tech Labs". The favicon stays the Veridock mark.
+- Not changed: SMS text (kept short to avoid extra SMS cost), API, database, authentication, roles and all workflows.
+- Works in light and dark mode: the emblem swaps variant with the theme, and the "Nexus Tech Labs" text uses a blue that passes contrast in both.
 
 ## Deploy
 - Render web service for `backend` (set env vars, use Cloudinary because Render disk is ephemeral), static sites for `desk` and `tracker` with `VITE_API_URL` pointing at the API. For the tracker, add an SPA rewrite of `/*` to `/index.html`.

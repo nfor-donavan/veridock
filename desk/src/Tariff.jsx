@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api, TYPES } from './api.js';
 import { t } from './i18n.js';
+import { Loading } from './Brand.jsx';
 
 const CARRIERS = ['Maersk', 'MSC', 'CMA CGM', 'Hapag-Lloyd', 'COSCO', 'Other'];
 export default function Tariff() {
@@ -12,7 +13,7 @@ export default function Tariff() {
       setCar(c);
     }).catch(e => setErr(e.message));
   }, []);
-  if (!tf) return <p className="muted">{err || t('Loading tariff…')}</p>;
+  if (!tf) return err ? <p className="err">{err}</p> : <Loading label={t('Loading tariff…')} />;
   const setRate = (k, f, v) => setTf({ ...tf, rates: { ...tf.rates, [k]: { ...tf.rates[k], [f]: v } } });
   const setC = (n, f, v) => setCar({ ...car, [n]: { ...car[n], [f]: v } });
   const save = async () => {

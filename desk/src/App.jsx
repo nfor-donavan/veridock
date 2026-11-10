@@ -5,6 +5,7 @@ import { getTheme, toggleTheme } from './theme.js';
 import Analytics from './Analytics.jsx';
 import Tariff from './Tariff.jsx';
 import Owner from './Owner.jsx';
+import { Logo, NexusBy, Footer, Loading } from './Brand.jsx';
 
 const Rerender = createContext(() => {});
 const MS = ['SGS_MANIFEST_ENTRY', 'CUSTOMS_DECLARATION', 'LIQUIDATION_SETTLED', 'BANK_DUTY_PAYMENT', 'PORT_PHYSICAL_INSPECTION', 'GATE_PASS_ISSUED'];
@@ -15,13 +16,6 @@ const RISK = {
 };
 const CHECKS = { NO_CAMERA_DATA: 'No camera data: possibly a screenshot, forwarded copy or edited image.', EDITING_SOFTWARE: 'Saved by image-editing software.', STALE_PHOTO: 'Photo taken more than 3 days before upload.', PHOTO_BEFORE_ARRIVAL: 'Photo taken before the container arrived.', FUTURE_DATE: 'Photo date is in the future (phone clock changed?).', REUSED_DOCUMENT: 'This exact file was already used before.' };
 const fmt = (d) => new Date(d).toLocaleDateString(getLang() === 'fr' ? 'fr-FR' : 'en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-
-function Logo({ size = 34 }) {
-  return (<svg width={size} height={size} viewBox="0 0 180 180" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#12A5B0" /><stop offset="1" stopColor="#0A1B2E" /></linearGradient></defs>
-    <path d="M90 0 172 45v90L90 180 8 135V45z" fill="url(#lg)" /><path d="M90 14 160 52v76L90 166 20 128V52z" fill="none" stroke="#C9A24B" strokeWidth="3" />
-    <g fill="#F3F5F4" opacity=".92"><rect x="52" y="58" width="36" height="22" rx="2" /><rect x="92" y="58" width="36" height="22" rx="2" /><rect x="72" y="84" width="36" height="22" rx="2" /></g>
-    <path d="M56 128 82 112 98 124 134 92" fill="none" stroke="#C9A24B" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" /></svg>);
-}
 
 function Tools() {
   const rerender = useContext(Rerender); const dark = getTheme() === 'dark';
@@ -43,7 +37,7 @@ function Login({ onDone }) {
   return (
     <div className="login">
       <div className="login-art">
-        <Logo size={64} /><h1>{t('Every stamp, every receipt, on the record.')}</h1>
+        <div className="lockup"><Logo size={64} /><div><b className="wordmark">Veridock</b><NexusBy onDark size={20} /></div></div><h1>{t('Every stamp, every receipt, on the record.')}</h1>
         <p>{t('Veridock gives importers live, document-backed visibility into customs clearance at Douala and Kribi.')}</p>
         <div className="quay" aria-hidden="true">{Array.from({ length: 18 }).map((_, i) => <i key={i} style={{ height: 30 + ((i * 37) % 70), background: ['#12A5B0', '#C9A24B', '#2E6F95', '#9B3D2F'][i % 4] }} />)}</div>
       </div>
@@ -96,7 +90,7 @@ function Drawer({ id, me, onClose, onChanged }) {
   const inp = useRef(); const isMgr = me.user.role === 'MANAGER';
   const load = async () => { setC(await api('/consignments/' + id)); setSms(await api(`/consignments/${id}/sms`)); };
   useEffect(() => { load(); }, [id]);
-  if (!c) return <aside className="drawer"><p>{t('Loading…')}</p></aside>;
+  if (!c) return <aside className="drawer"><Loading /></aside>;
   const next = STEPS[c.step]; const link = `${TRACKER}/bl/${c.publicToken}`; const dm = c.demurrage;
   const advance = async () => {
     setBusy(true); setErr('');
@@ -203,7 +197,7 @@ function Dashboard({ me, onLogout }) {
   const isMgr = me.user.role === 'MANAGER';
   return (
     <div className="shell">
-      <header className="top"><div className="row"><Logo /><div><b className="brand">Veridock</b><small>{me.agency}</small></div></div>
+      <header className="top"><div className="row"><Logo /><div><b className="brand">Veridock</b><small>{me.agency}</small></div><span className="vsep hide-sm" /><span className="hide-sm"><NexusBy onDark size={18} /></span></div>
         <div className="row"><Bell me={me} /><Tools /><span className="muted hide-sm">{me.user.name}</span><button className="btn" onClick={() => { localStorage.removeItem('vd_token'); localStorage.removeItem('vd_me'); onLogout(); }}>{t('Sign out')}</button></div></header>
       <nav className="tabs">{[['containers', 'Containers'], ['analytics', 'Performance'], ...(isMgr ? [['tariff', 'Demurrage tariff']] : [])].map(([k, l]) => <button key={k} className={view === k ? 'on' : ''} onClick={() => setView(k)}>{t(l)}</button>)}</nav>
       {view === 'analytics' ? <main><Analytics /></main> : view === 'tariff' ? <main><Tariff /></main> : <main>
@@ -223,8 +217,9 @@ function Dashboard({ me, onLogout }) {
               <td className="num">{c.riskLevel === 'CLEARED' ? '—' : c.daysRemaining}</td>
               <td>{c.demurrage.estMax ? <><b>{money(c.demurrage)}</b><small>XAF · {TYPES[c.containerType]}</small></> : <small>{t('None yet')} · {TYPES[c.containerType]}</small>}</td>
               <td><span className={`chip ${r.cls}`}>{t(r.label)}</span></td></tr>); })}
-            {rows.length === 0 && <tr><td colSpan="7" className="empty">{t('No containers match. Register a container to start tracking it.')}</td></tr>}</tbody></table></div>
+            {rows.length === 0 && <tr><td colSpan="7" className="empty"><Logo size={36} /><p>{t('No containers match. Register a container to start tracking it.')}</p></td></tr>}</tbody></table></div>
       </main>}
+      <Footer />
       {open && <Drawer id={open} me={me} onClose={() => setOpen(null)} onChanged={load} />}
       {adding && <NewModal port={me.port} onClose={() => setAdding(false)} onSaved={() => { setAdding(false); load(); }} />}
     </div>

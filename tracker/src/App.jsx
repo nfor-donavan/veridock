@@ -9,14 +9,15 @@ const TXT = {
   en: { loading: 'Loading your container…', invalid: 'This tracking link is not valid. Check the link in your SMS, or ask your transit agent to resend it.', container: 'Container', port: 'port', step: 'Step {a} of {b}', camcis: 'CAMCIS reference',
     left: '{n} free day(s) left', over: '{n} day(s) over the free period', waiting: 'Waiting', view: 'View document', hide: 'Hide document', pdf: 'Open PDF receipt', fp: 'Fingerprint',
     fees: 'Estimated storage charges so far', feesExact: 'Storage charges so far', feeNote: 'Estimate for {n} day(s) past the free period. The final amount is set by the shipping line.', feeNoteExact: 'Based on the shipping line tariff for {n} day(s) past the free period.',
-    report: 'Download clearance report (PDF)', foot: 'Bill of lading {bl} · Arrived {d}', foot2: 'Each step is backed by a document uploaded by your transit agency.', lang: 'Change language', theme: 'Toggle light or dark mode',
+    report: 'Download clearance report (PDF)', foot: 'Bill of lading {bl} · Arrived {d}', foot2: 'Each step is backed by a document uploaded by your transit agency.', dev: 'Developed by', lang: 'Change language', theme: 'Toggle light or dark mode',
     risk: { SAFE: 'On schedule', WARNING: 'Free storage period running down', CRITICAL_RISK: 'Urgent: storage fines are close', FINES_ACCUMULATING: 'Storage fines are accruing', CLEARED: 'Cleared for exit' } },
   fr: { loading: 'Chargement de votre conteneur…', invalid: 'Ce lien de suivi n’est pas valide. Vérifiez le lien reçu par SMS ou demandez à votre transitaire de le renvoyer.', container: 'Conteneur', port: 'port', step: 'Étape {a} sur {b}', camcis: 'Référence CAMCIS',
     left: 'Il reste {n} jour(s) gratuit(s)', over: '{n} jour(s) au-delà du délai gratuit', waiting: 'En attente', view: 'Voir le document', hide: 'Masquer le document', pdf: 'Ouvrir le reçu PDF', fp: 'Empreinte',
     fees: 'Frais de stockage estimés à ce jour', feesExact: 'Frais de stockage à ce jour', feeNote: 'Estimation pour {n} jour(s) au-delà du délai gratuit. Le montant final est fixé par la compagnie maritime.', feeNoteExact: 'Selon le tarif de la compagnie maritime, pour {n} jour(s) au-delà du délai gratuit.',
-    report: 'Télécharger le rapport de dédouanement (PDF)', foot: 'Connaissement {bl} · Arrivé le {d}', foot2: 'Chaque étape s’appuie sur un document déposé par votre agence de transit.', lang: 'Changer de langue', theme: 'Basculer entre mode clair et mode sombre',
+    report: 'Télécharger le rapport de dédouanement (PDF)', foot: 'Connaissement {bl} · Arrivé le {d}', foot2: 'Chaque étape s’appuie sur un document déposé par votre agence de transit.', dev: 'Développé par', lang: 'Changer de langue', theme: 'Basculer entre mode clair et mode sombre',
     risk: { SAFE: 'Dans les délais', WARNING: 'Le délai gratuit de stockage s’écoule', CRITICAL_RISK: 'Urgent : les frais de stockage approchent', FINES_ACCUMULATING: 'Des frais de stockage courent', CLEARED: 'Autorisé à sortir' } }
 };
+const NX = ({ s = 16 }) => (<><img className="nx nx-for-light" src="/nexus-emblem.png" alt="" width={Math.round(s * 0.83)} height={s} /><img className="nx nx-for-dark" src="/nexus-emblem-light.png" alt="" width={Math.round(s * 0.83)} height={s} /></>);
 const CLS = { SAFE: 'safe', WARNING: 'warn', CRITICAL_RISK: 'crit', FINES_ACCUMULATING: 'fine', CLEARED: 'done' };
 const fill = (s, v) => Object.entries(v).reduce((o, [k, x]) => o.split(`{${k}}`).join(x), s);
 
@@ -31,7 +32,7 @@ export default function App() {
   const bar = (<div className="tools"><button className="tool" aria-label={T.lang} onClick={() => pick(L === 'fr' ? 'en' : 'fr')}>{L === 'fr' ? 'EN' : 'FR'}</button>
     <button className="tool" aria-label={T.theme} onClick={() => { toggleTheme(); bump(x => x + 1); }}>{getTheme() === 'dark' ? '☀' : '☾'}</button></div>);
   if (err) return <div className="page"><header><b className="brand">Veridock</b>{bar}</header><p className="fail">{T.invalid}</p></div>;
-  if (!d) return <div className="page"><p className="muted">{T.loading}</p></div>;
+  if (!d) return <div className="page load"><b className="brand">Veridock</b><p className="muted" role="status">{T.loading}</p></div>;
   const dm = d.demurrage;
   return (
     <div className="page">
@@ -60,7 +61,7 @@ export default function App() {
           </li>))}
       </ol>
       <a className="report" href={`${BASE}/api/public/track/${token}/report?lang=${L}`} target="_blank" rel="noreferrer">{T.report}</a>
-      <footer>{fill(T.foot, { bl: d.billOfLading, d: dateFmt(d.arrivalDate) })}<br />{T.foot2}</footer>
+      <footer>{fill(T.foot, { bl: d.billOfLading, d: dateFmt(d.arrivalDate) })}<br />{T.foot2}<span className="devline"><NX /> Veridock · {T.dev} <b>Nexus Tech Labs</b></span></footer>
     </div>
   );
 }
